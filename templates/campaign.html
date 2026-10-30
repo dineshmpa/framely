@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ c.title }} — Framely{% endblock %}
+{% block meta %}
+<meta name="description" content="{{ c.description or ('Add the ' ~ c.title ~ ' frame to your profile picture.') }}">
+<meta property="og:title" content="{{ c.title }}">
+<meta property="og:description" content="{{ c.description or 'Add this frame to your profile picture.' }}">
+<meta property="og:image" content="{{ url_for('frame_file', filename=c.frame_file, _external=True) }}">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+{% block content %}
+<div class="campaign-layout">
+  <section class="editor-col">
+    <div class="stage-wrap">
+      <div class="stage checker" id="stage">
+        <canvas id="canvas" width="{{ c.width }}" height="{{ c.height }}"></canvas>
+        <button type="button" class="stage-cta" id="stage-cta">
+          <strong>Choose your photo</strong>
+          <span class="small">or drag &amp; drop it here</span>
+        </button>
+      </div>
+      <p class="muted small center" id="stage-help" hidden>Drag to move · scroll or pinch to zoom · two fingers to rotate</p>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" hidden>
+
+    <div class="controls" id="controls" hidden>
+      <label class="control">
+        <span>Zoom</span>
+        <input type="range" id="zoom" min="0.1" max="5" step="0.01" value="1">
+      </label>
+      <label class="control">
+        <span>Rotate</span>
+        <input type="range" id="rotate" min="-180" max="180" step="1" value="0">
+      </label>
+      <label class="control control-inline">
+        <span>Background</span>
+        <input type="color" id="bg" value="#ffffff">
+      </label>
+      <div class="control-buttons">
+        <button type="button" class="btn btn-ghost btn-sm" id="flip">Flip</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="reset">Reset</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="change">Change photo</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="info-col">
+    <h1>{{ c.title }}</h1>
+    {% if c.description %}<p class="desc">{{ c.description }}</p>{% endif %}
+    <p class="muted small">Used by <span id="uses">{{ c.uses }}</span> supporter(s)</p>
+
+    <div class="preview-row">
+      <div>
+        <div class="preview-circle"><canvas id="preview" width="160" height="160"></canvas></div>
+        <p class="muted small center">How it looks as a profile picture</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary btn-block" id="download" disabled>Download picture</button>
+      <button type="button" class="btn btn-ghost btn-block" id="share-img" disabled hidden>Share picture</button>
+      <button type="button" class="btn btn-ghost btn-block" id="copy-link">Copy campaign link</button>
+    </div>
+    <div class="share-links">
+      {% set link = url_for('campaign', slug=c.slug, _external=True) %}
+      <a target="_blank" rel="noopener" href="https://wa.me/?text={{ (c.title ~ ' ' ~ link)|urlencode }}">WhatsApp</a>
+      <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text={{ c.title|urlencode }}&url={{ link|urlencode }}">X / Twitter</a>
+      <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u={{ link|urlencode }}">Facebook</a>
+      <a target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url={{ link|urlencode }}">LinkedIn</a>
+    </div>
+    <p class="muted small privacy">Your photo stays on your device — it's combined with the frame right in your browser.</p>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.FRAMELY = {
+    frameUrl: {{ url_for('frame_file', filename=c.frame_file)|tojson }},
+    useUrl: {{ url_for('record_use', slug=c.slug)|tojson }},
+    slug: {{ c.slug|tojson }},
+    title: {{ c.title|tojson }},
+    link: {{ url_for('campaign', slug=c.slug, _external=True)|tojson }}
+  };
+</script>
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

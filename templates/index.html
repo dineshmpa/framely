@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Frame your profile picture.<br><span class="accent">Support a cause.</span></h1>
+  <p>Upload a transparent PNG frame to launch a campaign, then share the link. Supporters add their photo, adjust it, and download a ready-to-post profile picture.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="{{ url_for('create') }}">Create a campaign</a>
+    <a class="btn btn-ghost" href="#explore">Browse frames</a>
+  </div>
+</section>
+
+<section id="explore">
+  <div class="section-head">
+    <h2>{% if q %}Results for “{{ q }}”{% else %}Explore campaigns{% endif %}</h2>
+    <form class="search" method="get" action="{{ url_for('index') }}#explore">
+      <input type="search" name="q" value="{{ q }}" placeholder="Search campaigns…">
+      <select name="sort" onchange="this.form.submit()">
+        <option value="popular" {% if sort == 'popular' %}selected{% endif %}>Most used</option>
+        <option value="new" {% if sort == 'new' %}selected{% endif %}>Newest</option>
+      </select>
+    </form>
+  </div>
+  {% if campaigns %}
+  <div class="grid">
+    {% for c in campaigns %}
+    <a class="card" href="{{ url_for('campaign', slug=c.slug) }}">
+      <div class="card-thumb checker"><img src="{{ url_for('frame_file', filename=c.frame_file) }}" alt="{{ c.title }}" loading="lazy"></div>
+      <div class="card-body">
+        <h3>{{ c.title }}</h3>
+        <p class="muted small">{{ c.uses }} supporter{{ '' if c.uses == 1 else 's' }} · {{ c.views }} view{{ '' if c.views == 1 else 's' }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <p>No campaigns {% if q %}match your search{% else %}yet{% endif %}.</p>
+    <a class="btn btn-primary" href="{{ url_for('create') }}">Create the first one</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

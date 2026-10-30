@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Create a campaign — Framely{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Create a campaign</h1>
+  <p class="muted">Upload a PNG frame with a transparent area where the supporter's photo will appear.</p>
+</div>
+<form class="create-layout" method="post" enctype="multipart/form-data" id="create-form">
+  <div class="panel">
+    <label class="dropzone checker" id="dropzone">
+      <input type="file" name="frame" id="frame-input" accept="image/png" required hidden>
+      <img id="frame-preview" alt="" hidden>
+      <div class="dropzone-hint" id="dropzone-hint">
+        <strong>Click or drop your PNG frame here</strong>
+        <span class="muted small">Square 1080×1080 recommended · min 400 px · max 10 MB</span>
+      </div>
+    </label>
+    <p class="small" id="frame-status"></p>
+  </div>
+  <div class="panel">
+    <label class="field">
+      <span>Campaign title</span>
+      <input type="text" name="title" maxlength="80" required value="{{ title or '' }}" placeholder="e.g. Earth Day 2026">
+    </label>
+    <label class="field">
+      <span>Description <span class="muted">(optional)</span></span>
+      <textarea name="description" maxlength="500" rows="5" placeholder="Tell supporters what this campaign is about.">{{ description or '' }}</textarea>
+    </label>
+    <div class="tips">
+      <strong>Frame tips</strong>
+      <ul>
+        <li>Export as PNG with transparency (alpha channel).</li>
+        <li>Keep important elements away from the corners — most platforms crop profile photos to a circle.</li>
+        <li>Use a square canvas for best results on every platform.</li>
+      </ul>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit" id="create-submit">Publish campaign</button>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/create.js') }}"></script>{% endblock %}

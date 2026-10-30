@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Manage {{ c.title }} — Framely{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{% if is_new %}Your campaign is live!{% else %}Manage campaign{% endif %}</h1>
+</div>
+<div class="manage-layout">
+  <div class="panel">
+    <div class="card-thumb checker big"><img src="{{ url_for('frame_file', filename=c.frame_file) }}" alt="{{ c.title }}"></div>
+    <p class="muted small center">{{ c.width }}×{{ c.height }} px · {{ c.views }} views · {{ c.uses }} downloads</p>
+  </div>
+  <div class="panel">
+    <label class="field">
+      <span>Public link — share this with supporters</span>
+      <div class="copy-row">
+        <input type="text" readonly value="{{ url_for('campaign', slug=c.slug, _external=True) }}" id="public-link">
+        <button type="button" class="btn btn-ghost btn-sm" data-copy="public-link">Copy</button>
+      </div>
+    </label>
+    <label class="field">
+      <span>Private manage link — <strong>save this</strong>, it's the only way to edit or delete</span>
+      <div class="copy-row">
+        <input type="text" readonly value="{{ url_for('manage', slug=c.slug, token=token, _external=True) }}" id="manage-link">
+        <button type="button" class="btn btn-ghost btn-sm" data-copy="manage-link">Copy</button>
+      </div>
+    </label>
+    <a class="btn btn-primary btn-block" href="{{ url_for('campaign', slug=c.slug) }}">Open campaign page</a>
+
+    <hr>
+    <form method="post">
+      <input type="hidden" name="token" value="{{ token }}">
+      <input type="hidden" name="action" value="update">
+      <label class="field"><span>Title</span><input type="text" name="title" maxlength="80" required value="{{ c.title }}"></label>
+      <label class="field"><span>Description</span><textarea name="description" maxlength="500" rows="4">{{ c.description }}</textarea></label>
+      <button class="btn btn-ghost" type="submit">Save changes</button>
+    </form>
+    <form method="post" onsubmit="return confirm('Delete this campaign permanently?')" class="danger-zone">
+      <input type="hidden" name="token" value="{{ token }}">
+      <input type="hidden" name="action" value="delete">
+      <button class="btn btn-danger" type="submit">Delete campaign</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('[data-copy]').forEach(btn => btn.addEventListener('click', async () => {
+  const input = document.getElementById(btn.dataset.copy);
+  input.select();
+  try { await navigator.clipboard.writeText(input.value); } catch (e) { document.execCommand('copy'); }
+  btn.textContent = 'Copied!'; setTimeout(() => (btn.textContent = 'Copy'), 1500);
+}));
+</script>
+{% endblock %}
