@@ -1,0 +1,23 @@
+<section class="editor-col">
+  <div class="stage-wrap">
+    <div class="stage checker" id="stage">
+      <canvas id="canvas" width="{{ width }}" height="{{ height }}"></canvas>
+      <button type="button" class="stage-cta" id="stage-cta">
+        <strong>Choose your photo</strong>
+        <span class="small">or drag &amp; drop it here</span>
+      </button>
+    </div>
+    <p class="muted small center" id="stage-help" hidden>Drag to move · scroll or pinch to zoom · two fingers to rotate</p>
+  </div>
+  <input type="file" id="photo-input" accept="image/*" hidden>
+  <div class="controls" id="controls" hidden>
+    <label class="control"><span>Zoom</span><input type="range" id="zoom" min="0.1" max="5" step="0.01" value="1"></label>
+    <label class="control"><span>Rotate</span><input type="range" id="rotate" min="-180" max="180" step="1" value="0"></label>
+    <label class="control control-inline"><span>Background</span><input type="color" id="bg" value="#ffffff"></label>
+    <div class="control-buttons">
+      <button type="button" class="btn btn-ghost btn-sm" id="flip">Flip</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="reset">Reset</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="change">Change photo</button>
+    </div>
+  </div>
+</section>

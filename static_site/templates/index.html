@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Frame your profile picture.<br><span class="accent">Support a cause.</span></h1>
+  <p>Pick a campaign, add your photo, adjust it, and download a ready-to-post profile picture for any social network.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#explore">Browse frames</a>
+    <a class="btn btn-ghost" href="{{ root }}try/">Try your own frame</a>
+  </div>
+</section>
+
+<section id="explore">
+  <div class="section-head">
+    <h2>Campaigns</h2>
+    <div class="search"><input type="search" id="search" placeholder="Search campaigns…" aria-label="Search campaigns"></div>
+  </div>
+  {% if campaigns %}
+  <div class="grid" id="grid">
+    {% for c in campaigns %}
+    <a class="card" href="{{ root }}c/{{ c.slug }}/" data-search="{{ (c.title ~ ' ' ~ c.description)|lower }}">
+      <div class="card-thumb checker"><img src="{{ root }}frames/{{ c.frame_file }}" alt="{{ c.title }}" loading="lazy"></div>
+      <div class="card-body">
+        <h3>{{ c.title }}</h3>
+        <p class="muted small">{{ c.description|truncate(60) if c.description else 'Add this frame to your photo' }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  <div class="empty" id="no-results" hidden><p>No campaigns match your search.</p></div>
+  {% else %}
+  <div class="empty"><p>No campaigns yet. Add a PNG to the <code>frames/</code> folder of the repository to create one.</p></div>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(() => {
+  const input = document.getElementById('search');
+  const cards = [...document.querySelectorAll('#grid .card')];
+  const none = document.getElementById('no-results');
+  if (!input) return;
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let shown = 0;
+    cards.forEach(c => { const m = c.dataset.search.includes(q); c.hidden = !m; shown += m; });
+    if (none) none.hidden = shown > 0;
+  });
+})();
+</script>
+{% endblock %}

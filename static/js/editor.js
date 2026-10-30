@@ -13,14 +13,33 @@
   const bgEl = document.getElementById('bg');
   const downloadBtn = document.getElementById('download');
   const shareBtn = document.getElementById('share-img');
-  const W = canvas.width, H = canvas.height;
+  let W = canvas.width, H = canvas.height;
 
   const frame = new Image();
   let photo = null;
   const st = { x: W / 2, y: H / 2, scale: 1, base: 1, rot: 0, flip: 1 };
 
-  frame.onload = render;
-  frame.src = cfg.frameUrl;
+  frame.onload = () => {
+    if (frame.naturalWidth !== W || frame.naturalHeight !== H) {
+      canvas.width = W = frame.naturalWidth;
+      canvas.height = H = frame.naturalHeight;
+      if (photo) { resetPosition(); return; }
+    }
+    render();
+  };
+  if (cfg.frameUrl) frame.src = cfg.frameUrl;
+
+  const frameInput = cfg.frameInputId && document.getElementById(cfg.frameInputId);
+  if (frameInput) {
+    frameInput.addEventListener('change', () => {
+      const file = frameInput.files[0];
+      if (!file) return;
+      if (file.type !== 'image/png') { alert('Frames must be PNG files with transparency.'); return; }
+      if (frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
+      frame.src = URL.createObjectURL(file);
+      document.dispatchEvent(new CustomEvent('framely:frame'));
+    });
+  }
 
   function render() {
     ctx.clearRect(0, 0, W, H);
@@ -179,9 +198,10 @@
   const fileName = () => `${cfg.slug}-framely.png`;
 
   function recordUse() {
+    if (!cfg.useUrl) return;
     fetch(cfg.useUrl, { method: 'POST' })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d) document.getElementById('uses').textContent = d.uses; })
+      .then(d => { const el = document.getElementById('uses'); if (d && el) el.textContent = d.uses; })
       .catch(() => {});
   }
 
@@ -208,7 +228,8 @@
     });
   }
 
-  document.getElementById('copy-link').addEventListener('click', async e => {
+  const copyBtn = document.getElementById('copy-link');
+  if (copyBtn) copyBtn.addEventListener('click', async e => {
     try { await navigator.clipboard.writeText(cfg.link); }
     catch (err) { prompt('Copy this link:', cfg.link); return; }
     e.target.textContent = 'Link copied!';

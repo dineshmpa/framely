@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ c.title }} — Framely{% endblock %}
+{% block meta %}
+<meta name="description" content="{{ c.description or ('Add the ' ~ c.title ~ ' frame to your profile picture.') }}">
+<meta property="og:title" content="{{ c.title }}">
+<meta property="og:description" content="{{ c.description or 'Add this frame to your profile picture.' }}">
+{% if site_url %}<meta property="og:image" content="{{ site_url }}/frames/{{ c.frame_file }}">
+<meta property="og:url" content="{{ site_url }}/c/{{ c.slug }}/">{% endif %}
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+{% block content %}
+{% set width = c.width %}{% set height = c.height %}
+{% set link = c.link %}
+<div class="campaign-layout">
+  {% include "editor_panel.html" %}
+  <aside class="info-col">
+    <h1>{{ c.title }}</h1>
+    {% if c.description %}<p class="desc">{{ c.description }}</p>{% endif %}
+    {% include "actions_panel.html" %}
+    <div class="share-links" id="share-links"></div>
+    <p class="muted small privacy">Your photo stays on your device — it's combined with the frame right in your browser.</p>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.FRAMELY = {
+    frameUrl: {{ (root ~ 'frames/' ~ c.frame_file)|tojson }},
+    slug: {{ c.slug|tojson }},
+    title: {{ c.title|tojson }},
+    link: {{ c.link|tojson }} || location.href.split(/[?#]/)[0]
+  };
+  (() => {
+    const l = encodeURIComponent(FRAMELY.link), t = encodeURIComponent(FRAMELY.title);
+    const links = [
+      ['WhatsApp', `https://wa.me/?text=${t}%20${l}`],
+      ['X / Twitter', `https://twitter.com/intent/tweet?text=${t}&url=${l}`],
+      ['Facebook', `https://www.facebook.com/sharer/sharer.php?u=${l}`],
+      ['LinkedIn', `https://www.linkedin.com/sharing/share-offsite/?url=${l}`],
+    ];
+    const box = document.getElementById('share-links');
+    links.forEach(([name, href]) => {
+      const a = document.createElement('a');
+      a.textContent = name; a.href = href; a.target = '_blank'; a.rel = 'noopener';
+      box.appendChild(a);
+    });
+  })();
+</script>
+<script src="{{ root }}static/js/editor.js"></script>
+{% endblock %}

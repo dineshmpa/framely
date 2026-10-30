@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Try your own frame — Framely{% endblock %}
+{% block content %}
+{% set width = 1080 %}{% set height = 1080 %}
+<div class="campaign-layout">
+  {% include "editor_panel.html" %}
+  <aside class="info-col">
+    <h1>Try your own frame</h1>
+    <p class="desc">Load any transparent PNG frame and a photo to make a framed picture right in your browser. Nothing is uploaded.</p>
+    <label class="btn btn-ghost btn-block" for="frame-input">1. Choose a PNG frame</label>
+    <input type="file" id="frame-input" accept="image/png" hidden>
+    <p class="muted small center" id="frame-name">No frame chosen yet</p>
+    {% include "actions_panel.html" %}
+    <div class="tips" style="margin-top:18px">
+      <strong>Want to publish it as a campaign?</strong>
+      <p class="small" style="margin:6px 0 0">Upload the PNG to the <code>frames/</code> folder of the site's GitHub repository. It gets its own shareable page automatically.</p>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.FRAMELY = { frameUrl: null, frameInputId: 'frame-input', slug: 'my-frame', title: 'My frame', link: '' };
+  document.getElementById('frame-input').addEventListener('change', e => {
+    const f = e.target.files[0];
+    document.getElementById('frame-name').textContent = f ? `Frame: ${f.name}` : 'No frame chosen yet';
+  });
+</script>
+<script src="{{ root }}static/js/editor.js"></script>
+{% endblock %}

@@ -1,0 +1,11 @@
+<div class="preview-row">
+  <div>
+    <div class="preview-circle"><canvas id="preview" width="160" height="160"></canvas></div>
+    <p class="muted small center">How it looks as a profile picture</p>
+  </div>
+</div>
+<div class="actions">
+  <button type="button" class="btn btn-primary btn-block" id="download" disabled>Download picture</button>
+  <button type="button" class="btn btn-ghost btn-block" id="share-img" disabled hidden>Share picture</button>
+  {% if link is defined %}<button type="button" class="btn btn-ghost btn-block" id="copy-link">Copy campaign link</button>{% endif %}
+</div>

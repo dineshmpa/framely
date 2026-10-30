@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="empty"><h1>404</h1><p>We couldn't find that page or campaign.</p><a class="btn btn-primary" href="{{ (site_url ~ '/') if site_url else '/' }}">Go home</a></div>
+{% endblock %}
